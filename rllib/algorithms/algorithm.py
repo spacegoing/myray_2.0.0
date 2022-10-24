@@ -258,6 +258,9 @@ class Algorithm(Trainable):
             # env id.
             timestr = datetime.today().strftime("%Y-%m-%d_%H-%M-%S")
             logdir_prefix = "{}_{}_{}".format(str(self), env_descr, timestr)
+            seed = config.get('seed',None)
+            if seed:
+                logdir_prefix = "{}_{}_{}_Seed_{}_".format(str(self), env_descr, timestr, seed)
             if not os.path.exists(DEFAULT_RESULTS_DIR):
                 os.makedirs(DEFAULT_RESULTS_DIR)
             logdir = tempfile.mkdtemp(prefix=logdir_prefix, dir=DEFAULT_RESULTS_DIR)
