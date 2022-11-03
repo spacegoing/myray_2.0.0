@@ -853,6 +853,7 @@ def _process_observations(
 
         # Check episode termination conditions.
         if dones[env_id]["__all__"] or episode.length >= horizon:
+            # import ipdb; ipdb.set_trace(context=7)
             hit_horizon = episode.length >= horizon and not dones[env_id]["__all__"]
             all_agents_done = True
             atari_metrics: List[RolloutMetrics] = _fetch_atari_metrics(base_env)

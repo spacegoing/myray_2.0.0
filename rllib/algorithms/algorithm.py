@@ -661,6 +661,7 @@ class Algorithm(Trainable):
         # - We have to evaluate in this training iteration, but no parallelism ->
         #   evaluate after the training iteration is entirely done.
         else:
+            # sg: training call, call training_step()
             results, train_iter_ctx = self._run_one_training_iteration()
 
         # Sequential: Train (already done above), then evaluate.
@@ -842,6 +843,7 @@ class Algorithm(Trainable):
                 # If unit=ts -> Run 1 `sample()` b/c the
                 # `rollout_fragment_length` is exactly the desired ts.
                 iters = duration if unit == "episodes" else 1
+                # import ipdb; ipdb.set_trace(context=7)
                 for _ in range(iters):
                     batch = self.evaluation_workers.local_worker().sample()
                     agent_steps_this_iter += batch.agent_steps()

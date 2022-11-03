@@ -165,6 +165,7 @@ def summarize_episodes(
     num_faulty_episodes = 0
 
     for episode in episodes:
+        # import ipdb; ipdb.set_trace(context=7)
         # Faulty episodes may still carry perf_stats data.
         for k, v in episode.perf_stats.items():
             perf_stats[k].append(v)
