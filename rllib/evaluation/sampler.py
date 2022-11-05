@@ -90,6 +90,7 @@ class SamplerInput(InputReader, metaclass=ABCMeta):
     @override(InputReader)
     def next(self) -> SampleBatchType:
         batches = [self.get_data()]
+        import ipdb; ipdb.set_trace(context=7)
         batches.extend(self.get_extra_batches())
         if len(batches) > 1:
             return batches[0].concat_samples(batches)
@@ -280,6 +281,7 @@ class SyncSampler(SamplerInput):
     def get_data(self) -> SampleBatchType:
         while True:
             item = next(self._env_runner)
+            import ipdb; ipdb.set_trace(context=7)
             if isinstance(item, RolloutMetrics):
                 self.metrics_queue.put(item)
             else:
@@ -699,6 +701,7 @@ def _env_runner(
         )
         perf_stats.incr("raw_obs_processing_time", time.time() - t1)
         for o in outputs:
+            import ipdb; ipdb.set_trace(context=7)
             yield o
 
         # Do batched policy eval (accross vectorized envs).
@@ -1039,6 +1042,7 @@ def _process_observations(
             # (to e.g. properly flush and clean up the SampleCollector's buffers),
             # but then discard the entire batch and don't return it.
             if not episode.is_faulty or episode.length > 0:
+                import ipdb; ipdb.set_trace(context=7)
                 ma_sample_batch = sample_collector.postprocess_episode(
                     episode,
                     is_done=is_done or (hit_horizon and not soft_horizon),
@@ -1047,6 +1051,7 @@ def _process_observations(
                 )
             if not episode.is_faulty:
                 if ma_sample_batch:
+                    # SG: append 1
                     outputs.append(ma_sample_batch)
 
                 # Call each (in-memory) policy's Exploration.on_episode_end
@@ -1154,8 +1159,15 @@ def _process_observations(
     if multiple_episodes_in_batch:
         sample_batches = (
             sample_collector.try_build_truncated_episode_multi_agent_batch()
+            # this only has values when:
+            # if built_steps + ongoing_steps >= self.rollout_fragment_length
         )
         if sample_batches:
+            # these two conditions mean that even episode is not done,
+            # if sampled steps > rollout_fragment_length, still can
+            # output one batch
+            # sample_batches: List[SampleBatchType], length = num_envs
+            import ipdb; ipdb.set_trace(context=7)
             outputs.extend(sample_batches)
 
     return active_envs, to_eval, outputs

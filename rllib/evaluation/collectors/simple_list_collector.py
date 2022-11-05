@@ -75,6 +75,7 @@ class _PolicyCollector:
         self.agent_steps += batch.count
         # And remove columns not needed for training.
         for view_col, view_req in view_requirements.items():
+            import ipdb; ipdb.set_trace(context=7)
             if view_col in batch and not view_req.used_for_training:
                 del batch[view_col]
         self.batches.append(batch)

@@ -693,6 +693,8 @@ class Algorithm(Trainable):
                     self._episodes_to_be_collected,
                     timeout_seconds=self.config["metrics_episode_collection_timeout_s"],
                 )
+                if results.get("custom_metrics",None):
+                    import ipdb; ipdb.set_trace(context=7)
                 results = self._compile_iteration_results(
                     episodes_this_iter=episodes_this_iter,
                     step_ctx=train_iter_ctx,

@@ -133,6 +133,8 @@ def collect_episodes(
         metric_lists.append(local_worker.get_metrics())
     episodes = []
     for metrics in metric_lists:
+        if metrics:
+            import ipdb; ipdb.set_trace(context=7)
         episodes.extend(metrics)
     return episodes, to_be_collected
 

@@ -820,6 +820,7 @@ class RolloutWorker(ParallelIteratorWorker):
             len(batches) < max_batches or self.policy_config.get("offline_sampling")
         ):
             batch = self.input_reader.next()
+            import ipdb; ipdb.set_trace(context=7)
             steps_so_far += (
                 batch.count
                 if self.count_steps_by == "env_steps"
