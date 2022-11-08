@@ -901,6 +901,22 @@ def _process_observations(
             hit_horizon = False
             all_agents_done = False
             active_envs.add(env_id)
+            if not episode.is_faulty:
+                # tmp_agent_rewards = dict()
+                # for k,v in dict(episode.agent_rewards):
+                #     tmp_agent_rewards[k] = 0
+                # return all perbatch custom metrics
+                tmp_cms = dict()
+                for k, v in episode.custom_metrics.items():
+                    if 'perbatch_' in k:
+                        tmp_cms[k]=v
+                outputs.append(
+                    RolloutMetrics(0, 0, {},
+                                    tmp_cms, {}, {}, {})
+                )
+            else:
+                # Add metrics about a faulty episode.
+                outputs.append(RolloutMetrics(episode_faulty=True))
 
         # Custom observation function is applied before preprocessing.
         if observation_fn:
