@@ -165,7 +165,13 @@ def summarize_episodes(
     num_faulty_episodes = 0
 
     for episode in episodes:
-        # import ipdb; ipdb.set_trace(context=7)
+        if not episode.agent_rewards:
+        # this means perbatch stat, only keep custom perbatch metrics
+        # skip rest
+            for k, v in episode.custom_metrics.items():
+                if 'perbatch_' in k:
+                    custom_metrics[k].append(v)
+            continue
         # Faulty episodes may still carry perf_stats data.
         for k, v in episode.perf_stats.items():
             perf_stats[k].append(v)
