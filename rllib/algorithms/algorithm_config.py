@@ -130,6 +130,7 @@ class AlgorithmConfig:
         self.sampler_perf_stats_ema_coef = None
 
         # `self.training()`
+        self.lambda_ = 0.95
         self.gamma = 0.99
         self.lr = 0.001
         self.train_batch_size = 32
@@ -246,10 +247,6 @@ class AlgorithmConfig:
         config.pop("algo_class")
 
         # Worst naming convention ever: NEVER EVER use reserved key-words...
-        if "lambda_" in config:
-            assert hasattr(self, "lambda_")
-            config["lambda"] = getattr(self, "lambda_")
-            config.pop("lambda_")
         if "input_" in config:
             assert hasattr(self, "input_")
             config["input"] = getattr(self, "input_")
@@ -733,6 +730,7 @@ class AlgorithmConfig:
 
     def training(
         self,
+        lambda_:Optional[float] = None,
         gamma: Optional[float] = None,
         lr: Optional[float] = None,
         train_batch_size: Optional[int] = None,
@@ -752,6 +750,8 @@ class AlgorithmConfig:
         Returns:
             This updated AlgorithmConfig object.
         """
+        if lambda_ is not None:
+            self.lambda_ = lambda_
         if gamma is not None:
             self.gamma = gamma
         if lr is not None:

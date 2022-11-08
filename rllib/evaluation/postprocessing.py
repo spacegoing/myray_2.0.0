@@ -186,7 +186,7 @@ def compute_gae_for_sample_batch(
         sample_batch,
         last_r,
         policy.config["gamma"],
-        policy.config["lambda"],
+        policy.config["lambda_"],
         use_gae=policy.config["use_gae"],
         use_critic=policy.config.get("use_critic", True),
     )
