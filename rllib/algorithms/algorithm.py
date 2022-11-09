@@ -239,6 +239,14 @@ class Algorithm(Trainable):
         if isinstance(config, AlgorithmConfig):
             config = config.to_dict()
 
+        # SG: For tune richrl_envV2 Usage, tune rollout_fragment_length
+        # use below to avoid conditional search sapce
+        # reference: ppo.py:350
+        num_workers = max(1, config['num_workers']) # num_workers could be 0
+        min_len_batch = config['rollout_fragment_length'] * num_workers * config['num_envs_per_worker']
+        if config["train_batch_size"] % min_len_batch != 0:
+            config['train_batch_size'] = min_len_batch
+
         # Convert `env` provided in config into a concrete env creator callable, which
         # takes an EnvContext (config dict) as arg and returning an RLlib supported Env
         # type (e.g. a gym.Env).
