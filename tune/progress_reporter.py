@@ -365,6 +365,9 @@ class TuneReporterBase(ProgressReporter):
                 _best_trial_str(current_best_trial, metric, self._parameter_columns)
             )
 
+        if len(trials)> 1:
+            import ipdb; ipdb.set_trace(context=7)
+        # check mode metric
         if has_verbosity(Verbosity.V1_EXPERIMENT):
             # Will filter the table in `trial_progress_str`
             messages.append(
@@ -748,6 +751,9 @@ def _trial_progress_str(
         sort_by_metric: Sort terminated trials by metric in the
             intermediate table. Defaults to False.
     """
+    if len(trials)> 1:
+        import ipdb; ipdb.set_trace(context=7)
+    # check trials parameters
     messages = []
     delim = "<br>" if fmt == "html" else "\n"
     if len(trials) < 1:
@@ -830,6 +836,8 @@ def _trial_progress_table(
     sort_by_metric: bool = False,
     max_column_length: int = 20,
 ):
+    if len(trials)>1:
+        import ipdb; ipdb.set_trace(context=7)
     messages = []
     num_trials = len(trials)
     trials_by_state = _get_trials_by_state(trials)
