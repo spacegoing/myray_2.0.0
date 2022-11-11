@@ -165,13 +165,14 @@ def summarize_episodes(
     num_faulty_episodes = 0
 
     for episode in episodes:
+
+        ############## SG ###########
         if not episode.agent_rewards:
         # this means perbatch stat, only keep custom perbatch metrics
         # skip rest
-            for k, v in episode.custom_metrics.items():
-                if 'perbatch_' in k:
-                    custom_metrics[k].append(v)
             continue
+        ############## SG ###########
+
         # Faulty episodes may still carry perf_stats data.
         for k, v in episode.perf_stats.items():
             perf_stats[k].append(v)
@@ -238,6 +239,43 @@ def summarize_episodes(
 
     for k, v_list in perf_stats.copy().items():
         perf_stats[k] = np.mean(v_list)
+
+    ############## SG ###########
+    # metric-env-episode-valuedict_list
+    from collections import defaultdict
+    custom_metrics = defaultdict(lambda: defaultdict(lambda: defaultdict(list)))
+    for metric_tuple in episodes:
+        # my customized metrics
+        if not metric_tuple.agent_rewards:
+            for k, v in metric_tuple.custom_metrics.items():
+                custom_metrics[k][v['env_id']][v['epi_id']].append(v)
+
+    processed_custom_metrics = dict()
+    for metric in custom_metrics:
+        if 'episode_avg' in metric:
+            env_list= []
+            for env in custom_metrics[metric]:
+                epi_list= []
+                for epi in custom_metrics[metric][env]:
+                    epi_mean = np.mean([v['value'] for v in custom_metrics[metric][env][epi]])
+                    epi_list.append(epi_mean)
+                env_list.append(np.mean(epi_list))
+            processed_custom_metrics[metric+'_mean'] = np.mean(env_list)
+        if 'episode_last' in metric:
+            env_list= []
+            for env in custom_metrics[metric]:
+                epi_list= []
+                for epi in custom_metrics[metric][env]:
+                    last = custom_metrics[metric][env][epi][-1]['value']
+                    epi_list.append(last)
+                env_list.append(np.mean(epi_list))
+            processed_custom_metrics[metric+'_mean'] = np.mean(env_list)
+        if 'batch_' in metric:
+            v_list = [v['value'] for v in custom_metrics[metric]['batch']['batch']]
+            # for evaluation, 4 envs will return 4 batch metric dicts
+            processed_custom_metrics[metric] = np.mean(v_list)
+    custom_metrics = processed_custom_metrics
+    ############## SG ###########
 
     return dict(
         episode_reward_max=max_reward,
